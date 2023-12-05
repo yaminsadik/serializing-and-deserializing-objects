@@ -1,17 +1,36 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.io.IOException;
+
 public class Main {
     public static void main(String[] args) {
-        // Press Opt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        // Instantiate objects
+        TextFileReader tr = new TextFileReader("sample.txt");
+        TextSerializer ts = new TextSerializer();
 
-        // Press Ctrl+R or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        try {
+            // Step 1: Read content from the file
+            String fullText = tr.readTextFile("sample.txt");
 
-            // Press Ctrl+D to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Cmd+F8.
-            System.out.println("i = " + i);
+            // Optional: Print the content
+            System.out.println("Content read from the file:\n" + fullText);
+
+            // Use regex to split the content into parts
+            String[] parts = fullText.split("Part \\d:");
+
+            // Serialize the parts into 3 files
+            for (int partNumber = 1; partNumber < parts.length; partNumber++) {
+                String serializedFileName = "part" + partNumber + ".ser";
+                ts.serializeText("Part " + partNumber + ": " + parts[partNumber], serializedFileName);
+            }
+
+            // Deserialize and print the content from the serialized files
+            for (int partNumber = 1; partNumber < parts.length; partNumber++) {
+                String serializedFileName = "part" + partNumber + ".ser";
+                String part = ts.deserializeText(serializedFileName);
+                System.out.println("Deserialized content from " + serializedFileName + ":\n" + part);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
+
